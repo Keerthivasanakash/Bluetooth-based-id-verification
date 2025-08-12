@@ -8,7 +8,7 @@ SoftwareSerial BT(10, 11); // RX, TX
 // Student Data
 String validIDs[] = {"ID001", "ID002", "ID004","ID008","ID009","ID010","ID011","ID015","ID016","ID020","ID021","ID024","ID027","ID031","ID032","ID033","ID034","ID037","ID039","ID040","ID041","ID043"};
 String studentNames[] = {"Annamalai", "Anto", "babin","Gabriel","Gowtham","Hari","Hari.K","Keerthi","Kishor","Madhesh","Manoj","$$MJ.Muthu$$","Prathap","Ragul","Ragunath","Rajarajan","Roshan","Vetri","Vimal","Vishnu","Yukesh","Vetri.M"};   
-String 4digitnumber[] = {"7895", "4730", "1935","2504","4880","1153","3585","2805","0949","6774","3960","3979","0142","6276","7653","0874","6357","8530","1493","5260","1402","4837"};
+String secretnumber[] = {"7895", "4730", "1935","2504","4880","1153","3585","2805","0949","6774","3960","3979","0142","6276","7653","0874","6357","8530","1493","5260","1402","4837"};
 
 int totalIDs = 22;
 
@@ -31,7 +31,7 @@ void setup() {
 
 void loop() {
   if (BT.available()) {
-    String receivedID = BT.readString('\n');
+    String receivedID = BT.readStringUntil('\n');
     receivedID.trim();
     lcd.clear();
     lcd.setCursor(0,0);
@@ -41,7 +41,7 @@ void loop() {
     if (index != -1) {
       lcd.setCursor(0,1);
       lcd.print("ADMIT:" + studentNames[index]);
-      digitalwrite(greenLED, HIGH);
+      digitalWrite(greenLED, HIGH);
       delay(2000);
       digitalWrite(greenLED, LOW);
 
@@ -51,11 +51,11 @@ void loop() {
     else {
       lcd.setCursor(0,1);
       lcd.print("ACCESS DENIED");
-      digitalwrite(redLED, HIGH);
+      digitalWrite(redLED, HIGH);
       tone(buzzer, 1000);
       delay(2000);
       noTone(buzzer);
-      digitalwrite(redLED, LOW);
+      digitalWrite(redLED, LOW);
     }
   }
 }
@@ -75,7 +75,7 @@ void askAndCheckQuestion(int index, String question) {
   BT.println(question);
 
   unsigned long startTime = millis();
-  while (seconds() - startTime < 15) { // Wait up to 10s
+  while (millis() - startTime < 15000) { // Wait up to 10s
     if (BT.available()) {
       String answer = BT.readStringUntil('\n');
       answer.trim();
@@ -84,18 +84,18 @@ void askAndCheckQuestion(int index, String question) {
         lcd.clear();
         lcd.setCursor(0,0);
         lcd.print("ANSWER CORRECT");
-        digitalwrite(greenLED, HIGH);
-        delay(20);
-        digitalwrite(greenLED, LOW);
+        digitalWrite(greenLED, HIGH);
+        delay(2000);
+        digitalWrite(greenLED, LOW);
       } else {
         lcd.clear();
-        lcd.setCursor(0,1);
+        lcd.setCursor(0,0);
         lcd.print("ACCESS DENIED");
-        digitalwrite(redLED, HIGH);
+        digitalWrite(redLED, HIGH);
         tone(buzzer, 1500);
         delay(2000);
         noTone(buzzer);
-        digitalwrite(redLED, LOW);
+        digitalWrite(redLED, LOW);
       }
       return;
     }
@@ -103,7 +103,7 @@ void askAndCheckQuestion(int index, String question) {
 
   // No reply in time
   lcd.clear();
-  lcd.setCursor(1,0);
+  lcd.setCursor(0,0);
   lcd.print("WHAT GOING ON?");
   delay(2000);
 }
